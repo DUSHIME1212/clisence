@@ -1,5 +1,5 @@
 import 'package:clisence/core/configs/theme/app_colors.dart';
-import 'package:clisence/data/services/weather_service.dart';
+import 'package:clisence/core/services/weather_service.dart';
 import 'package:clisence/presentation/pages/app/settings.dart';
 import 'package:clisence/presentation/pages/chat/chat_screen.dart';
 import 'package:clisence/presentation/pages/app/profile_screen.dart';
@@ -58,6 +58,8 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
+  final WeatherService _weatherService = WeatherService();
+
   Future<void> _fetchWeatherData() async {
     try {
       setState(() {
@@ -65,12 +67,36 @@ class _HomeScreenState extends State<HomeScreen> {
         errorMessage = '';
       });
 
-      final current = await WeatherService.getCurrentWeather();
-      final hourly = await WeatherService.getHourlyForecast();
-
+      // Use the user's location or a default location
+      final location = 'Kigali'; // You might want to get this from user settings
+      final weatherData = await _weatherService.fetchWeatherData(location);
+      
+      // Convert WeatherData to the format expected by the UI
       setState(() {
-        currentWeather = current;
-        hourlyForecast = hourly;
+        currentWeather = {
+          'main': {
+            'temp': weatherData.temperature,
+            'temp_min': weatherData.tempMin,
+            'temp_max': weatherData.tempMax,
+            'humidity': weatherData.humidity,
+          },
+          'weather': [
+            {
+              'main': weatherData.weatherCondition,
+              'description': weatherData.weatherDescription,
+              'icon': weatherData.iconCode,
+            }
+          ],
+          'wind': {
+            'speed': weatherData.windSpeed,
+          },
+          'dt': weatherData.lastUpdated.millisecondsSinceEpoch ~/ 1000,
+          'name': location,
+        };
+        
+        // For hourly forecast, you might want to implement a separate method in WeatherService
+        hourlyForecast = []; // Set to empty for now
+        
         isLoading = false;
       });
     } catch (e) {
@@ -121,6 +147,7 @@ class _HomeScreenState extends State<HomeScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(errorMessage),
+            const SizedBox(height: 16),
             ElevatedButton(
               onPressed: _fetchWeatherData,
               child: const Text('Retry'),
@@ -129,53 +156,71 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       );
     } else {
-      // Process forecast data for the daily forecast cards
-      final List<Map<String, dynamic>> forecasts = [
-        {
-          'title': 'Morning',
-          'icon': _getWeatherIcon(currentWeather?['weather'][0]['main'] ?? ''),
-          'description': currentWeather?['weather'][0]['description'] ?? '',
-          'temperature': '${currentWeather?['main']['temp']?.round()}°C',
-          'windSpeed':
-          'Wind: ${currentWeather?['wind']['speed']?.round()} km/h',
-          'image':
-          'https://i.pinimg.com/736x/8b/55/59/8b5559aa155c458f774bccfade3c4782.jpg',
-          'location': currentWeather?['name'] ?? '',
-        },
-        // Add more forecast periods as needed
-      ];
-
-      // Check if there are weather alerts
-      final hasAlerts = currentWeather?['weather'][0]['main'] == 'Rain';
-
-      content = RefreshIndicator(
-        onRefresh: _fetchWeatherData,
-        child: ListView(
+      content = SingleChildScrollView(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Current weather section
+            // Current weather card
             CurrentWeatherCard(
-              weatherData: currentWeather,
+              weatherData: currentWeather!,
               getWeatherIcon: _getWeatherIcon,
             ),
-
-            // Today's forecast section
-            const SectionTitle(text: 'Today\'s Forecast'),
-            ListView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: forecasts.length,
-              itemBuilder: (context, index) {
-                final forecast = forecasts[index];
-                return WeatherCard(
-                  title: forecast['title'],
-                  iconData: forecast['icon'],
-                  temperature: forecast['temperature'],
-                  condition: forecast['description'],
-                  imageUrl: forecast['image'],
-                );
+            
+            const SizedBox(height: 24),
+            
+            // Crop Advice Card
+            GestureDetector(
+              onTap: () {
+                Navigator.pushNamed(context, '/crop-advice');
               },
+              child: Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.green[50],
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: Colors.green[100]!),
+                ),
+                child: Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: Colors.green[100],
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(Icons.eco, color: Colors.green, size: 28),
+                    ),
+                    const SizedBox(width: 16),
+                    const Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Get Crop Advice',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.green,
+                            ),
+                          ),
+                          SizedBox(height: 4),
+                          Text(
+                            'Get personalized advice for your crops based on current weather',
+                            style: TextStyle(fontSize: 14, color: Colors.grey),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.green),
+                  ],
+                ),
+              ),
             ),
-
+            
+            const SizedBox(height: 24),
+            
             // Hourly forecast section
             const SectionTitle(text: 'Hourly Forecast'),
             HourlyForecastSection(
@@ -183,28 +228,13 @@ class _HomeScreenState extends State<HomeScreen> {
               getWeatherIcon: _getWeatherIcon,
               formatTime: _formatTime,
             ),
-
-            // Weather alerts section (if any)
-            if (hasAlerts) ...[
-              const SectionTitle(text: 'Weather Alerts'),
-              WeatherAlertsSection(currentWeather: currentWeather),
-            ],
-
-            // Actions section
-            const SectionTitle(text: 'Actions'),
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: BasicButton(
-                logo: null,
-                title: 'Go to Chat',
-                callback: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const ChatScreen()),
-                  );
-                },
-              ),
-            ),
+            
+            const SizedBox(height: 24),
+            
+            // Weather alerts section
+            const SectionTitle(text: 'Weather Alerts'),
+            const SizedBox(height: 8),
+            WeatherAlertsSection(currentWeather: currentWeather),
           ],
         ),
       );

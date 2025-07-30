@@ -16,6 +16,8 @@ class SettingsItemModel {
   final String subtitle;
   final Function() onTap;
   final bool showDivider;
+  final Color? titleColor;
+  final Color? iconColor;
 
   SettingsItemModel({
     required this.icon,
@@ -23,5 +25,7 @@ class SettingsItemModel {
     required this.subtitle,
     required this.onTap,
     this.showDivider = true,
+    this.titleColor,
+    this.iconColor,
   });
 }

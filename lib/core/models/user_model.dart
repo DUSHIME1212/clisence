@@ -29,6 +29,43 @@ class UserModel {
     required this.preferredChannels,
   });
 
+  // Add this factory constructor before the toJson method
+  factory UserModel.fromMap(Map<String, dynamic> map) {
+    return UserModel(
+      id: map['id'] ?? '',
+      fullName: map['fullName'] ?? '',
+      email: map['email'] ?? '',
+      phone: map['phone'] ?? '',
+      gender: map['gender'] ?? '',
+      age: (map['age'] ?? 0).toInt(),
+      country: map['country'] ?? '',
+      region: map['region'] ?? '',
+      district: map['district'] ?? '',
+      farmSize: (map['farmSize'] ?? 0.0).toDouble(),
+      mainCrops: List<String>.from(map['mainCrops'] ?? []),
+      plantingSeason: map['plantingSeason'] ?? '',
+      preferredChannels: List<String>.from(map['preferredChannels'] ?? []),
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'fullName': fullName,
+      'email': email,
+      'phone': phone,
+      'gender': gender,
+      'age': age,
+      'country': country,
+      'region': region,
+      'district': district,
+      'farmSize': farmSize,
+      'mainCrops': mainCrops,
+      'plantingSeason': plantingSeason,
+      'preferredChannels': preferredChannels,
+    };
+  }
+
   // Create a default user for testing
   factory UserModel.dummy() {
     return UserModel(

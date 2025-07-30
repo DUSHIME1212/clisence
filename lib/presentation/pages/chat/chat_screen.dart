@@ -24,7 +24,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
   // Initialize Gemini
   final model = GenerativeModel(
-    model: 'gemini-1.5-flash',
+    model: 'gemini-2.0-flash-001',
     // usind dotenv
     apiKey: dotenv.env['GEMINI_API_KEY'] ?? '',
   );
@@ -67,8 +67,22 @@ class _ChatScreenState extends State<ChatScreen> {
 
     try {
       // Get response from Gemini
-      final content = [Content.text(message.text)];
-      final response = await model.generateContent(content);
+      final content = Content.text('''
+You are an expert agricultural advisor providing specific, actionable advice to farmers.
+Please provide specific adaptation strategies for these crops given the current conditions. Include:
+1. Immediate actions the farmer should take
+2. Potential risks to watch out for
+3. Recommended timing for next steps
+4. Any specific varieties or practices that would be beneficial
+
+Keep the advice practical, localized, and easy to understand. Focus on low-cost, high-impact recommendations.
+
+Format the response in clear, concise bullet points with emojis for better readability.
+
+${message.text}
+''');
+      final response = await model.generateContent([content]);
+
       final responseText =
           response.text ?? 'I am not sure how to respond to that.';
 

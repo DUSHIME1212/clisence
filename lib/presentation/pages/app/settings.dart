@@ -1,4 +1,5 @@
 import 'package:clisence/presentation/pages/app/profile_screen.dart';
+import 'package:clisence/presentation/pages/auth/farm_info_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:clisence/core/models/settings.dart';
@@ -14,6 +15,8 @@ class SettingsScreen extends StatefulWidget {
 
 class _SettingsScreenState extends State<SettingsScreen> {
   late List<SettingsSectionModel> settingsSections;
+
+
 
   @override
   void initState() {
@@ -46,7 +49,21 @@ class _SettingsScreenState extends State<SettingsScreen> {
             icon: Icons.agriculture_outlined,
             title: 'CROPS',
             subtitle: 'MANAGE YOUR CROPS',
-            onTap: () => _navigateToManageCrops(),
+            // navigate to farm info screen
+            onTap: () {
+              final authProvider = Provider.of<AuthProvider>(context, listen: false);
+              final user = authProvider.user;
+              if (user != null) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => FarmInfoScreen(
+                      userId: user.id,
+                      userName: user.fullName,
+                      userEmail: user.email)
+                  ),
+                );
+              }
+            },
             showDivider: false,
           ),
         ],
@@ -117,7 +134,69 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ),
         ],
       ),
+      // Delete Account
+      SettingsSectionModel(
+        title: 'DANGER ZONE',
+        items: [
+          SettingsItemModel(
+            icon: Icons.delete_forever_outlined,
+            title: 'DELETE ACCOUNT',
+            subtitle: 'PERMANENTLY DELETE YOUR ACCOUNT AND ALL DATA',
+            titleColor: Colors.red,
+            iconColor: Colors.red,
+            showDivider: false,
+            onTap: () => _showDeleteAccountDialog(context),
+          ),
+        ],
+      ),
     ];
+  }
+
+  Future<void> _showDeleteAccountDialog(BuildContext context) async {
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    
+    return showDialog<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Delete Account', style: TextStyle(color: Colors.red)),
+          content: const Text(
+            'Are you sure you want to delete your account? This action cannot be undone. All your data will be permanently removed.',
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('CANCEL', style: TextStyle(color: Colors.grey)),
+              onPressed: () => Navigator.of(context).pop(),
+            ),
+            TextButton(
+              child: const Text('DELETE', style: TextStyle(color: Colors.red)),
+              onPressed: () async {
+                Navigator.of(context).pop(); // Close the dialog
+                try {
+                  await authProvider.deleteUser();
+                  if (context.mounted) {
+                    Navigator.pushNamedAndRemoveUntil(
+                      context,
+                      '/login',
+                      (route) => false,
+                    );
+                  }
+                } catch (e) {
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('Failed to delete account: $e'),
+                        backgroundColor: Colors.red,
+                      ),
+                    );
+                  }
+                }
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -230,7 +309,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               child: Icon(
                 item.icon,
                 size: 20,
-                color: Colors.grey.shade600,
+                color: item.iconColor ?? Colors.grey.shade600,
               ),
             ),
             const SizedBox(width: 16),
@@ -240,10 +319,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 children: [
                   Text(
                     item.title,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
-                      color: Colors.black87,
+                      color: item.titleColor ?? Colors.black87,
                     ),
                   ),
                   const SizedBox(height: 2),

@@ -39,9 +39,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
       // Note: You might want to fetch additional user data from Firestore here
       setState(() {
         _user = UserModel(
-          id: firebaseUser.uid,
-          fullName: firebaseUser.displayName ?? 'User',
-          phone: firebaseUser.phoneNumber ?? 'No phone number',
+          id: firebaseUser.id,
+          fullName: firebaseUser.fullName ?? 'User',
+          phone: firebaseUser.phone ?? 'No phone number',
           email: firebaseUser.email ?? 'No email',
           gender: 'Not specified',
           age: 0,

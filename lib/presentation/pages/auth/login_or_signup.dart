@@ -1,3 +1,4 @@
+import 'package:clisence/core/configs/theme/app_colors.dart';
 import 'package:clisence/presentation/pages/auth/login.dart';
 import 'package:clisence/presentation/pages/auth/signup.dart';
 import 'package:flutter/material.dart';
@@ -8,6 +9,8 @@ class LoginOrSignup extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Color(0xFF004C20),
+
       body: Center(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -20,13 +23,13 @@ class LoginOrSignup extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
-                  color: Colors.black,
+                  color: Colors.white,
                 ),
               ),
               const Text(
                 "Clisence is app for get weather updateds and informations",
                 textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 16, color: Colors.black),
+                style: TextStyle(fontSize: 16, color: Colors.white),
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -42,14 +45,14 @@ class LoginOrSignup extends StatelessWidget {
                       "Sign up",
                       style: TextStyle(
                         fontSize: 16,
-                        color: Colors.black,
+                        color: Colors.white,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                   ),
                   const Text(
                     "or",
-                    style: TextStyle(fontSize: 16, color: Colors.black),
+                    style: TextStyle(fontSize: 16, color: Colors.white),
                   ),
                   TextButton(
                     onPressed: () {
@@ -62,7 +65,7 @@ class LoginOrSignup extends StatelessWidget {
                       "Sign in",
                       style: TextStyle(
                         fontSize: 16,
-                        color: Colors.black,
+                        color: Colors.white,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
