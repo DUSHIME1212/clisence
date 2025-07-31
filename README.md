@@ -31,7 +31,7 @@ Clisence is a Flutter mobile application that leverages Firebase for backend ser
 
 1. **Clone the repository:**
    ```bash
-   git clone https://github.com/your-username/clisence.git
+   git clone https://github.com/DUSHIME1212/clisence.git
    cd clisence
    ```
 
