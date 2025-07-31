@@ -52,6 +52,85 @@ Clisence is a Flutter mobile application that leverages Firebase for backend ser
    flutter run
    ```
 
+## Architecture Snapshot
+
+### Overview
+Clisence follows a **Clean Architecture** pattern with **Provider** state management, organized into distinct layers for separation of concerns and maintainability.
+
+### Architecture Layers
+
+#### 1. **Presentation Layer** (`lib/presentation/`)
+- **Pages**: UI screens organized by feature (auth, app)
+- **Providers**: State management using Provider pattern
+- **Widgets**: Reusable UI components
+
+#### 2. **Core Layer** (`lib/core/`)
+- **Models**: Domain entities and business logic
+- **Configs**: App-wide configurations (theme, colors, TTS)
+
+#### 3. **Data Layer** (`lib/data/`)
+- **Services**: External API integrations and data sources
+
+#### 4. **Utils Layer** (`lib/utils/`)
+- **Helpers**: Utility functions and common operations
+
+### Key Architectural Patterns
+
+#### **State Management**
+```dart
+// Provider-based state management
+MultiProvider(
+  providers: [
+    ChangeNotifierProvider(create: (_) => AuthProvider()),
+  ],
+  child: const MyApp(),
+)
+```
+
+#### **Authentication Flow**
+```dart
+// AuthWrapper pattern for conditional navigation
+return authProvider.isAuthenticated
+    ? const HomeScreen()
+    : const SplashScreen();
+```
+
+#### **Service Layer Pattern**
+```dart
+// External API integration
+class WeatherService {
+  static Future<Map<String, dynamic>> getCurrentWeather() async {
+    // HTTP requests with error handling
+  }
+}
+```
+
+#### **Model-Provider Pattern**
+```dart
+// Domain models with business logic
+class UserModel {
+  final String id;
+  final String fullName;
+  // ... other properties
+}
+```
+
+### Dependency Flow
+```
+UI (Pages/Widgets) 
+    ↓
+Providers (State Management)
+    ↓
+Services (Data Layer)
+    ↓
+External APIs (Firebase, Weather API)
+```
+
+### Configuration Management
+- **Environment Variables**: `.env` file for API keys
+- **Firebase**: Centralized configuration in `firebase_options.dart`
+- **Theme**: Centralized theming in `core/configs/theme/`
+
 ## Project Structure
 
 ```
@@ -62,6 +141,12 @@ lib/
         app_theme.dart
         app_colors.dart
       text_to_speech.dart
+    models/
+      user_model.dart
+      settings.dart
+  data/
+    services/
+      weather_service.dart
   presentation/
     pages/
       app/
@@ -78,6 +163,8 @@ lib/
     widgets/
       auth_wrapper.dart
       (various weather and UI widgets)
+  utils/
+    auth_helper.dart
   firebase_options.dart
   main.dart
 ```
