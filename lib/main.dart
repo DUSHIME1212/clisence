@@ -1,13 +1,17 @@
 
 import 'package:clisence/core/configs/theme/app_theme.dart';
+import 'package:clisence/core/configs/localization/app_localizations.dart';
 import 'package:clisence/firebase_options.dart';
 import 'package:clisence/presentation/pages/app/home.dart';
 import 'package:clisence/presentation/pages/app/settings.dart';
+import 'package:clisence/presentation/pages/app/language_settings.dart';
 import 'package:clisence/presentation/pages/auth/login.dart';
 import 'package:clisence/presentation/providers/auth_provider.dart';
+import 'package:clisence/presentation/providers/language_provider.dart';
 import 'package:clisence/presentation/widgets/auth_wrapper.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
@@ -23,6 +27,7 @@ Future<void> main() async {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => AuthProvider()),
+        ChangeNotifierProvider(create: (_) => LanguageProvider()),
       ],
       child: const MyApp(),
     ),
@@ -34,26 +39,47 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      theme: AppTheme.lightTheme,
-      home: const AuthWrapper(),
-      routes: {
-        '/login': (context) => const Login(),
-        '/home': (context) => const HomeScreen(),
-        '/settings': (context) => const SettingsScreen(),
-        // Profile routes
-        '/profile': (context) => const Scaffold(body: Center(child: Text('Profile - Coming Soon'))),
-        '/farm-location': (context) => const Scaffold(body: Center(child: Text('Farm Location - Coming Soon'))),
-        '/manage-crops': (context) => const Scaffold(body: Center(child: Text('Manage Crops - Coming Soon'))),
-        // Preferences routes
-        '/communication-preferences': (context) => const Scaffold(body: Center(child: Text('Communication Preferences - Coming Soon'))),
-        '/language-settings': (context) => const Scaffold(body: Center(child: Text('Language Settings - Coming Soon'))),
-        // Privacy routes
-        '/privacy-settings': (context) => const Scaffold(body: Center(child: Text('Privacy Settings - Coming Soon'))),
-        // Help routes
-        '/contact-support': (context) => const Scaffold(body: Center(child: Text('Contact Support - Coming Soon'))),
-        // Add other routes here
+    return Consumer<LanguageProvider>(
+      builder: (context, languageProvider, child) {
+        return MaterialApp(
+          debugShowCheckedModeBanner: false,
+          theme: AppTheme.lightTheme,
+          locale: languageProvider.currentLocale,
+          supportedLocales: const [
+            Locale('en', 'US'),
+            Locale('es', 'ES'),
+            Locale('fr', 'FR'),
+            Locale('de', 'DE'),
+            Locale('pt', 'BR'),
+            Locale('ar', 'SA'),
+            Locale('zh', 'CN'),
+            Locale('hi', 'IN'),
+          ],
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          home: const AuthWrapper(),
+          routes: {
+            '/login': (context) => const Login(),
+            '/home': (context) => const HomeScreen(),
+            '/settings': (context) => const SettingsScreen(),
+            // Profile routes
+            '/profile': (context) => const Scaffold(body: Center(child: Text('Profile - Coming Soon'))),
+            '/farm-location': (context) => const Scaffold(body: Center(child: Text('Farm Location - Coming Soon'))),
+            '/manage-crops': (context) => const Scaffold(body: Center(child: Text('Manage Crops - Coming Soon'))),
+            // Preferences routes
+            '/communication-preferences': (context) => const Scaffold(body: Center(child: Text('Communication Preferences - Coming Soon'))),
+            '/language-settings': (context) => const LanguageSettingsScreen(),
+            // Privacy routes
+            '/privacy-settings': (context) => const Scaffold(body: Center(child: Text('Privacy Settings - Coming Soon'))),
+            // Help routes
+            '/contact-support': (context) => const Scaffold(body: Center(child: Text('Contact Support - Coming Soon'))),
+            // Add other routes here
+          },
+        );
       },
     );
   }

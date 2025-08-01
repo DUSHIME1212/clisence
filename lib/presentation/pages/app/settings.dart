@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:clisence/core/models/settings.dart';
 import 'package:clisence/core/configs/theme/app_colors.dart';
 import 'package:clisence/presentation/providers/auth_provider.dart';
+import 'package:clisence/core/configs/localization/app_localizations.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({Key? key}) : super(key: key);
@@ -24,12 +25,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
   void _initializeSettingsSections() {
     settingsSections = [
       SettingsSectionModel(
-        title: 'ACCOUNT',
+        title: AppLocalizations.of(context).account,
         items: [
           SettingsItemModel(
             icon: Icons.person_outline,
-            title: 'PROFILE',
-            subtitle: 'EDIT YOUR PROFILE',
+            title: AppLocalizations.of(context).profile,
+            subtitle: AppLocalizations.of(context).editYourProfile,
             onTap: () => Navigator.push(
               context,
               MaterialPageRoute(builder: (context) => ProfileScreen()),
@@ -37,15 +38,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ),
           SettingsItemModel(
             icon: Icons.location_on_outlined,
-            title: 'FARM LOCATION',
-            subtitle: 'MANAGE YOUR FARM LOCATION',
+            title: AppLocalizations.of(context).farmLocation,
+            subtitle: AppLocalizations.of(context).manageYourFarmLocation,
             onTap: () => _navigateToFarmLocation(),
           ),
 
           SettingsItemModel(
             icon: Icons.agriculture_outlined,
-            title: 'CROPS',
-            subtitle: 'MANAGE YOUR CROPS',
+            title: AppLocalizations.of(context).crops,
+            subtitle: AppLocalizations.of(context).manageYourCrops,
             onTap: () => _navigateToManageCrops(),
             showDivider: false,
           ),
@@ -53,42 +54,42 @@ class _SettingsScreenState extends State<SettingsScreen> {
       ),
 
       SettingsSectionModel(
-        title: 'PREFERENCES',
+        title: AppLocalizations.of(context).preferences,
         items: [
           SettingsItemModel(
             icon: Icons.notifications_outlined,
-            title: 'COMMUNICATION',
-            subtitle: 'MANAGE YOUR COMMUNICATION PREFERENCES',
+            title: AppLocalizations.of(context).communication,
+            subtitle: AppLocalizations.of(context).manageYourCommunicationPreferences,
             onTap: () => _navigateToCommunicationPrefs(),
           ),
           SettingsItemModel(
             icon: Icons.language_outlined,
-            title: 'LANGUAGE',
-            subtitle: 'SWITCH LANGUAGES',
+            title: AppLocalizations.of(context).language,
+            subtitle: AppLocalizations.of(context).switchLanguages,
             onTap: () => _navigateToLanguageSettings(),
             showDivider: false,
           ),
         ],
       ),
       SettingsSectionModel(
-        title: 'PRIVACY',
+        title: AppLocalizations.of(context).privacy,
         items: [
           SettingsItemModel(
             icon: Icons.privacy_tip_outlined,
-            title: 'PRIVACY',
-            subtitle: 'PRIVACY AND DATA USE NOTIFICATIONS',
+            title: AppLocalizations.of(context).privacy,
+            subtitle: AppLocalizations.of(context).privacyAndDataUseNotifications,
             onTap: () => _navigateToPrivacySettings(),
             showDivider: false,
           ),
         ],
       ),
       SettingsSectionModel(
-        title: 'HELP',
+        title: AppLocalizations.of(context).help,
         items: [
           SettingsItemModel(
             icon: Icons.help_outline,
-            title: 'CONTACT',
-            subtitle: 'CONTACT US FOR HELP',
+            title: AppLocalizations.of(context).contact,
+            subtitle: AppLocalizations.of(context).contactUsForHelp,
             onTap: () => _navigateToContactSupport(),
             showDivider: false,
           ),
@@ -96,12 +97,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
       ),
       // logout
       SettingsSectionModel(
-        title: 'LOGOUT',
+        title: AppLocalizations.of(context).logout,
         items: [
           SettingsItemModel(
             icon: Icons.logout_outlined,
-            title: 'LOGOUT',
-            subtitle: 'LOGOUT OF YOUR ACCOUNT',
+            title: AppLocalizations.of(context).logout,
+            subtitle: AppLocalizations.of(context).logoutOfYourAccount,
             showDivider: false,
             onTap: () async {
               final authProvider = Provider.of<AuthProvider>(context, listen: false);
@@ -137,9 +138,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
         icon: const Icon(Icons.arrow_back, color: Colors.white),
         onPressed: () => Navigator.of(context).pop(),
       ),
-      title: const Text(
-        'SETTINGS',
-        style: TextStyle(
+      title: Text(
+        AppLocalizations.of(context).settings,
+        style: const TextStyle(
           color: Colors.white,
           fontSize: 18,
           fontWeight: FontWeight.w600,
